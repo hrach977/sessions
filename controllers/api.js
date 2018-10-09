@@ -17,6 +17,7 @@ module.exports = function(app) {
     app.get('/users', function(req, res, next) {
        app.db.users.find({}, function(err, users) {
          if (users) {
+             console.log(users);
              res.send(users);
          }
        });
@@ -40,13 +41,13 @@ module.exports = function(app) {
 
     app.post('/login', function(req, res, next) {
         console.log('post worked');
-        console.log('sessions is: ' + req.session);
+        console.log('session is: %j', req.session);
         passport.authenticate('local', function(err, user, info) {
             console.log('insider authenticate callback');
-            console.log(req.username);
-            console.log(req.password);
+            //console.log(req.username);
+            //console.log(req.password);
 
-            console.log('sessions is: ' + req.session);
+            console.log('session is: %j', req.session);
             console.log('sessions id inside login is: ' + req.session.id);
             if (err) console.log(err);
             if (user) console.log('user is: ' + user);
@@ -56,6 +57,7 @@ module.exports = function(app) {
             document.session_id = req.session.id;
             document.user_id = user._id;
             document.created = new Date();
+            document.session = JSON.parse(JSON.stringify(req.session));
             document.save();
 
             res.redirect("/")

@@ -8,7 +8,18 @@ var ObjectId = Schema.ObjectId;
 var userSessionsSchema = new Schema({
     session_id: String,
     user_id: {type: ObjectId, index: true},
-    created: Date //{type: Date, index: true}
+    created: Date, //{type: Date, index: true}
+    session: {
+        cookie: {
+            originalMaxAge: {type: Number},
+            expires: {type: Date},
+            secure: {type: Boolean},
+            httpOnly: {type: Boolean},
+            domain: {type: String},
+            path: {type: String},
+            sameSite: {type: Boolean}
+        }
+    }
 });
 
 userSessionsSchema.index({created: 1, expireAfterSeconds: 100000});

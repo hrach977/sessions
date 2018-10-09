@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 //     collection: 'user_sessions'
 // });
 
+//app.use(express.cookieParser());
 app.use(express.json());
 app.use(flash());
 app.listen(3000, function() {
