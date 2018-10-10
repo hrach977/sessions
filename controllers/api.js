@@ -3,6 +3,9 @@
  */
 const passport = require('passport');
 
+const ObjectId = require('mongoose').Types.ObjectId;
+
+
 module.exports = function(app) {
 
     app.get('/sessions', function(req, res, next) {
@@ -88,13 +91,17 @@ module.exports = function(app) {
        //      console.log('the current users username is: ' + doc.user_id);
        //  });
 
-        app.db.user_sessions.findOne({session_id: req.session.id}, null, null, function(err, doc) {
-            console.log('the current users id is: ' + doc.user_id);
-            app.db.user_sessions.remove({user_id: doc.user_id, session_id: {$not: req.session.id}});
-            app.db.users.findOneAndUpdate({_id: doc.user_id}, {password: req.password});
+        // app.db.user_sessions.findOne({session_id: req.session.id}, null, null, function(err, doc) {
+        //     console.log('the current users id is: ' + doc.user_id);
+        //     app.db.user_sessions.remove({user_id: doc.user_id, session_id: {$not: req.session.id}});
+        //     //app.db.users.findOneAndUpdate({_id: doc.user_id}, {password: req.password});
+        // });
+
+        app.db.user_sessions.findOne({session_id: req.session.id}, function(err, doc) {
+            console.log('the doc insie /reset post is: ' + doc);
+           app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.user_id)});
         });
-
-
+        res.render('index');
 
        //app.db.user_sessions.find
     });
