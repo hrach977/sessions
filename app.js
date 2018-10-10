@@ -13,7 +13,7 @@ const uuid = require('uuid/v4');
 
 
 var app = express();
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // var store = new MongoDBStore({
@@ -27,6 +27,11 @@ app.use(flash());
 app.listen(3000, function() {
     console.log('listening on port 3000');
 });
+
+require('./models/users');
+require('./models/user_sessions');
+require('./setup')(app);
+
 
 app.set('view engine', 'ejs');
 
@@ -65,8 +70,6 @@ passport.use(new LocalStrategy(
 
 ));
 
-require('./models/users');
-require('./models/user_sessions');
-require('./setup')(app);
+
 require('./controllers/api')(app);
 

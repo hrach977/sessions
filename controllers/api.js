@@ -32,10 +32,18 @@ module.exports = function(app) {
     });
 
     app.get('/', function(req, res, next) {
+        console.log('session id inside /: ' + req.session.id);
+        //console.log('user inside / id: ' + req.user); //undefined
+        app.db.user_sessions.findOne({session_id: req.session.id}, function(err, doc) {
+            if (doc) {
+                console.log('id of the user in / is: ' + doc.user_id);
+            }
+        });
        res.render('index');
     });
 
     app.get('/login', function(req, res, next) {
+        console.log('session id inside login get is: ' + req.session.id);
         res.render('login');
     });
 
@@ -50,7 +58,10 @@ module.exports = function(app) {
             console.log('session is: %j', req.session);
             console.log('sessions id inside login is: ' + req.session.id);
             if (err) console.log(err);
-            if (user) console.log('user is: ' + user);
+            if (user) {
+                console.log('user is: ' + user);
+                req.user = user;
+            }
             if (info) console.log(info);
 
             var document = app.db.user_sessions();
@@ -66,6 +77,7 @@ module.exports = function(app) {
     });
 
     app.get('/reset', function(req, res, next) {
+        console.log('session id inside /reset: ' + req.session.id);
        res.render('reset');
     });
 
@@ -88,8 +100,11 @@ module.exports = function(app) {
     });
 
     app.get('/logout', function(req, res, next) {
+        console.log('session id inside /logout: ' + req.session.id);
+        req.session.destroy();
        req.logout();
-       res.redirect('/');
+       //console.log('session id inside /logout after destroying the session: ' + req.session.id); cannot read property id of undefined
+       res.redirect('/login');
     });
 
 
