@@ -11,7 +11,7 @@ module.exports = function(app) {
     app.get('/sessions', function(req, res, next) {
        app.db.user_sessions.find({}, function(err, sessions) {
           if (sessions) {
-              console.log(sessions);
+              //console.log(sessions);
               res.send(sessions);
           }
        });
@@ -20,7 +20,7 @@ module.exports = function(app) {
     app.get('/users', function(req, res, next) {
        app.db.users.find({}, function(err, users) {
          if (users) {
-             console.log(users);
+             //console.log(users);
              res.send(users);
          }
        });
@@ -60,6 +60,8 @@ module.exports = function(app) {
 
             console.log('session is: %j', req.session);
             console.log('sessions id inside login is: ' + req.session.id);
+            req.session.user_id = user.id;
+            req.session.session_id = req.session.id;
             if (err) console.log(err);
             if (user) {
                 console.log('user is: ' + user);
@@ -67,12 +69,12 @@ module.exports = function(app) {
             }
             if (info) console.log(info);
 
-            var document = app.db.user_sessions();
-            document.session_id = req.session.id;
-            document.user_id = user._id;
-            document.created = new Date();
-            document.session = JSON.parse(JSON.stringify(req.session));
-            document.save();
+            // var document = app.db.user_sessions();
+            // document.session_id = req.session.id;
+            // document.user_id = user._id;
+            // document.created = new Date();
+            // document.session = JSON.parse(JSON.stringify(req.session));
+            // document.save();
 
             res.redirect("/")
 
@@ -97,9 +99,9 @@ module.exports = function(app) {
         //     //app.db.users.findOneAndUpdate({_id: doc.user_id}, {password: req.password});
         // });
 
-        app.db.user_sessions.findOne({session_id: req.session.id}, function(err, doc) {
+        app.db.user_sessions.findOne({"session.session_id": req.session.id}, function(err, doc) {
             console.log('the doc insie /reset post is: ' + doc);
-           app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.user_id)});
+           app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.session.user_id)});
         });
         res.render('index');
 
