@@ -30,9 +30,9 @@ module.exports = function(app) {
        console.log('endpoint works');
     });
 
-    app.post('/reset-password', function(req, res, next) {
-
-    });
+    // app.post('/reset-password', function(req, res, next) {
+    //
+    // });
 
     app.get('/', function(req, res, next) {
         console.log('session id inside /: ' + req.session.id);
@@ -101,7 +101,10 @@ module.exports = function(app) {
 
         app.db.user_sessions.findOne({"session.session_id": req.session.id}, function(err, doc) {
             console.log('the doc insie /reset post is: ' + doc);
-           app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.session.user_id)});
+           //app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.session.user_id)});
+            console.log('user_id of the doc is: ' + doc.toObject().session.user_id);
+            //app.db.user_sessions.deleteMany({"session.user_id": new ObjectId('"' + doc.toObject().session.user_id + '"')});
+            app.db.user_sessions.deleteMany({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())});
         });
         res.render('index');
 
