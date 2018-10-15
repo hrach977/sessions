@@ -98,14 +98,20 @@ module.exports = function(app) {
         //     app.db.user_sessions.remove({user_id: doc.user_id, session_id: {$not: req.session.id}});
         //     //app.db.users.findOneAndUpdate({_id: doc.user_id}, {password: req.password});
         // });
-
-        app.db.user_sessions.findOne({"session.session_id": req.session.id}, function(err, doc) {
-            console.log('the doc insie /reset post is: ' + doc);
-           //app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.session.user_id)});
-            console.log('user_id of the doc is: ' + doc.toObject().session.user_id);
-            //app.db.user_sessions.deleteMany({"session.user_id": new ObjectId('"' + doc.toObject().session.user_id + '"')});
-            app.db.user_sessions.deleteMany({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())});
-        });
+        //
+        // app.db.user_sessions.findOne({"session.session_id": req.session.id}, function(err, doc) {
+        //     console.log('the doc insie /reset post is: ' + doc);
+        //    //app.db.user_sessions.deleteMany({user_id: new ObjectId(doc.session.user_id)});
+        //     console.log('user_id of the doc is: ' + doc.toObject().session.user_id);
+        //     //app.db.user_sessions.deleteMany({"session.user_id": new ObjectId('"' + doc.toObject().session.user_id + '"')});
+        //     //app.db.user_sessions.deleteMany({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())});
+        //     app.db.user_sessions.find({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())}, function(err, sessions) {
+        //        sessions.forEach(session => {
+        //                 session.destroy();
+        //            });
+        //     });
+        // });
+        app.store.destroyAllSessionsOfUser(req.session.id);
         res.render('index');
 
        //app.db.user_sessions.find

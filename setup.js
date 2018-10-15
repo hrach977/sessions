@@ -7,6 +7,8 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session); //het berel ira ameninchov
 //const SessionStore = require('connect-mongoose-session-store')(session);
 //const MongooseStore = require('connect-mongoose-session');
+const ObjectId = require('mongoose').Types.ObjectId;
+
 
 module.exports = function(app) {
     mongoose.Promise = Promise;
@@ -108,6 +110,37 @@ module.exports = function(app) {
     // store.set = function(sid, session, cb) {
     //     //how to handle the session in our case?
     // };
+    var store = new MongoDBStore(
+        {
+            uri: 'mongodb://localhost:27017/nodeSessions',
+            collection: 'user_sessions'
+        }
+    );
+
+    store.destroyAllSessionsOfUser = function(sid) {
+        // app.db.user_sessions.find({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())}, function(err, sessions) {
+        //     sessions.forEach(session => {
+        //         store.destroy(session.session_id);
+        // });
+        // });
+        app.db.user_sessions.findOne({"session.session_id": sid}, function(err, doc) {
+            console.log('the doc of current session is: ' + doc);
+            console.log('and the user id is: ' + doc.toObject().session.user_id.toString());
+            console.log('the user id with constructor: ' + new ObjectId(doc.toObject().session.user_id.toString()));
+            app.db.user_sessions.find({"session.user_id": new ObjectId(doc.toObject().session.user_id.toString())}, function(err, sessions) {
+                console.log('iteratin over the sessions');
+                console.log('here are the sessions: ' + sessions);
+                sessions.forEach(session => {
+                    //session.destroy();
+                    console.log('sessions of current iteration is: ' + session);
+                    store.destroy(session.session_id);
+                }
+                );
+            });
+        });
+    };
+
+    app.store = store;
 
     app.use(session({
         // genid: (req) => {
@@ -119,12 +152,13 @@ module.exports = function(app) {
             maxAge: 1000 * 60 * 60 * 24 * 7 //1 week
         },
         //store: store,
-        store: new MongoDBStore(
-            {
-                uri: 'mongodb://localhost:27017/nodeSessions',
-                collection: 'user_sessions'
-            }
-        ),
+        // store: new MongoDBStore(
+        //     {
+        //         uri: 'mongodb://localhost:27017/nodeSessions',
+        //         collection: 'user_sessions'
+        //     }
+        // ),
+        store: store,
         resave: true,
         saveUninitialized: false  //pay attention to this parameter
     }));
