@@ -19,7 +19,7 @@ var userSessionsSchema = new Schema({
             sameSite: {type: Boolean}
         },
         session_id: String,
-        user_id: {type: ObjectId, index: true}
+        user_id: {type: String, index: true}
     }
     //expires
 });

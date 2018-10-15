@@ -111,7 +111,23 @@ module.exports = function(app) {
         //            });
         //     });
         // });
-        app.store.destroyAllSessionsOfUser(req.session.id);
+        //app.store.destroyAllSessionsOfUser(req.session.id);
+        app.db.user_sessions.findOne({"session.session_id": req.session.id}, function(err, doc) {
+            console.log('the doc of current session is: ' + doc);
+            console.log('and the user id is: ' + doc.toObject().session.user_id.toString());
+            console.log('the user id with constructor: ' + new ObjectId(doc.toObject().session.user_id.toString()));
+            app.db.user_sessions.deleteMany({"session.user_id": doc.toObject().session.user_id.toString()}, function(err, sessions) {
+                console.log('iteratin over the sessions');
+                console.log('here are the sessions: ' + sessions);
+            //     sessions.forEach(session => {
+            //         //session.destroy();
+            //         console.log('sessions of current iteration is: ' + session);
+            //     //store.destroy(session.session_id);
+            //     session.destroy();
+            // }
+
+            });
+        });
         res.render('index');
 
        //app.db.user_sessions.find
